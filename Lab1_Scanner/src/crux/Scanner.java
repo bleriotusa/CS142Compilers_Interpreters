@@ -4,7 +4,7 @@ import java.io.Reader;
 import java.util.Iterator;
 
 
-public class Scanner implements Iterable<Token> {
+public class Scanner implements Iterable<Token>, Iterator<Token> {
 	public static String studentName = "Michael J. Chen";
 	public static String studentID = "37145431";
 	public static String uciNetID = "chenmj1";
@@ -15,6 +15,7 @@ public class Scanner implements Iterable<Token> {
 	private Reader input;
 	
 	private static final int EOF = -1;
+	private byte EOFcount = 0; // for use by hasNext()
 	
 	Scanner(Reader reader)
 	{
@@ -63,7 +64,7 @@ public class Scanner implements Iterable<Token> {
 		if(nextChar == '\0')
 			nextChar = readChar();
 		
-		// make sure starting character isn't whitespace
+		// make sure starting character isn't whitespace or comment
 		while(Character.isWhitespace(nextChar))
 			nextChar = readChar();
 		
@@ -75,7 +76,7 @@ public class Scanner implements Iterable<Token> {
 		String tokenStr = "";
 		Token token = null;
 		int startCharPos = charPos;
-		boolean tokenSet = false;
+		byte someMatchMade = 0;
 
 		// while another token can still be made and character isn't whitespace,
 		// try to map the string lexical to a token
@@ -83,45 +84,83 @@ public class Scanner implements Iterable<Token> {
 				Token.hasMoreMatches(tokenStr))
 		{
 			tokenStr += (char)nextChar;
-//			System.out.println("Scanner Loop Passed");
-			
+			if(tokenStr.equals("//"))
+			{
+				while(nextChar != '\n' && nextChar != EOF)
+					nextChar = readChar();
+				if(nextChar == EOF)
+					return Token.EOF(lineNum, charPos);
+				nextChar = readChar();
+				tokenStr = "";
+				tokenStr += (char)nextChar;
+				token = null;
+				startCharPos = charPos;
+				someMatchMade = 0;
+			}
 			for(Token.Kind kind : Token.Kind.values())
 			{
 				if(kind.getValue().equals(tokenStr))
 				{
 					token = new Token(tokenStr, lineNum, startCharPos);
-					tokenSet = true;
-				}
-				else if(Token.isInteger(tokenStr))
-				{
-					token = Token.Integer(lineNum, startCharPos);
-					tokenSet = true;
-				}
-				else if(tokenStr.equals(Integer.toString(EOF)))
-				{
-					token = Token.EOF(lineNum, startCharPos);
-					tokenSet = true;
+//					someMatchMade = true;
 				}
 			}
+			if(Token.isInteger(tokenStr))
+			{
+				token = new Token(tokenStr, lineNum, startCharPos);
+//				someMatchMade = true;
+			}
 			
+			else if(Token.isFloat(tokenStr))
+			{
+				token = new Token(tokenStr, lineNum, startCharPos);
+//				someMatchMade = true;
+			}
+			else if(Token.isValidIdentifier(tokenStr))
+			{
+				token = new Token(tokenStr, lineNum, startCharPos);
+//				someMatchMade = true;
+			}
+			else if(tokenStr.equals(Integer.toString(EOF)))
+			{
+				token = Token.EOF(lineNum, startCharPos);
+//				someMatchMade = true;
+			}
+			if(Token.isValidToken(tokenStr))
+				someMatchMade++;
 			// only read on if file is not at the end,
 			// and a token has been set, if token exists but hasn't been set this time... 
 //			if(nextChar != EOF && Token.hasMoreMatches(tokenStr))
-			if(nextChar != EOF)
+			if(nextChar != EOF && Token.isValidToken(tokenStr) || (token == null && someMatchMade == 0))
 				nextChar = readChar();
 		}
-		return (token == null)? new Token("Error", lineNum, startCharPos) : token;
+		
+		if(someMatchMade > 0)
+			return (token == null)? new Token(tokenStr.substring(0,tokenStr.length()-1),
+					lineNum, startCharPos) : token;
+		return (token == null)? new Token(tokenStr.substring(0,tokenStr.length()),
+				lineNum, startCharPos) : token;
 	}
 
 	@Override
 	public Iterator<Token> iterator() {
 		// TODO Auto-generated method stub
-		return null;
+		return new Scanner(input);
 	}
-	private boolean hasPossibleMatches(String tokenStr){
-		if(Token.hasMoreMatches(tokenStr))
-			;
-		return true;
+
+
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		if(nextChar == EOF)
+			EOFcount++;
+		return (EOFcount < 1)? true : false;
+	}
+
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	// OPTIONAL: any other methods that you find convenient for implementation or testing

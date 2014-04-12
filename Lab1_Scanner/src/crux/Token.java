@@ -95,12 +95,7 @@ public class Token {
 		return tok;
 	}
 	
-	public static Token Integer(int linePos, int charPos)
-	{
-		Token tok = new Token(linePos, charPos);
-		tok.kind = Kind.INTEGER;
-		return tok;
-	}
+
 	private Token(int lineNum, int charPos)
 	{
 		this.lineNum = lineNum;
@@ -113,6 +108,7 @@ public class Token {
 	
 	public Token(String lexeme, int lineNum, int charPos)
 	{
+		
 		this.lineNum = lineNum;
 		this.charPos = charPos;
 		this.lexeme = lexeme;
@@ -156,6 +152,12 @@ public class Token {
 		default: kind = Kind.ERROR; break;
 		}
 		
+		if(isInteger(lexeme))
+			kind = Kind.INTEGER;
+		else if(isFloat(lexeme))
+			kind = Kind.FLOAT;
+		else if(isValidIdentifier(lexeme) && kind.equals(Kind.ERROR))
+			kind = Kind.IDENTIFIER;
 		// if we don't match anything, signal error
 //		this.kind = Kind.ERROR;
 //		this.lexeme = "Unrecognized lexeme: " + lexeme;
@@ -178,6 +180,7 @@ public class Token {
 		return lexeme;
 	}
 	
+	
 	// a crux string has more matches if:
 	// 1. it is a valid integer
 	// 2. it is a valid float
@@ -186,19 +189,40 @@ public class Token {
 	// 		e.g. = valid but not full. >= is valid and full, so it has no more matches.
 	public static boolean hasMoreMatches(String kindPart)
 	{
-//		if (isInteger(kindPart))
-//			return true;
-		if (isValidResCharThatHasMatches(kindPart))
+		if (isInteger(kindPart))
 			return true;
-//		if(isValidIdentifier(kindPart))
-//			return true;	
+		if(isFloat(kindPart))
+			return true;
+		if(isValidIdentifier(kindPart))
+			return true;	
+		if (isValidResCharThatHasMatches(kindPart, true))
+			return true;
+		if(kindPart.equals("/"))
+			return true;
+		return false;				
+	}
+	
+	public static boolean isValidToken(String kindPart)
+	{
+		if (isInteger(kindPart))
+			return true;
+		if(isFloat(kindPart))
+			return true;
+		if(isValidIdentifier(kindPart))
+			return true;
+		if (isValidResCharThatHasMatches(kindPart, false))
+			return true;
 		return false;
-				
 	}
 	
 	public String toString()
 	{
 		// TODO: implement this // implemented
+		if(kind == Kind.ERROR)
+			return String.format("%s(Unexpected character: %s)(lineNum:%d, charPos:%d)",
+					kind.name(), lexeme, lineNum, charPos);
+		else if(kind == Kind.INTEGER || kind == Kind.FLOAT || kind == Kind.IDENTIFIER)
+			return String.format("%s(%s)(lineNum:%d, charPos:%d)", kind.name(), lexeme, lineNum, charPos);
 		return String.format("%s(lineNum:%d, charPos:%d)", kind.name(), lineNum, charPos);
 	}
 	
@@ -217,6 +241,41 @@ public class Token {
 		return true;
 	}
 	
+	public static boolean isFloat(String tokenStr){
+		if(tokenStr.length() == 0)
+			return true;
+		
+		boolean validFloat = false;
+		int currChar = 0;
+		int firstChar = tokenStr.charAt(0);
+		int decimalCount = 0;
+		
+		if(firstChar >= 48 && currChar <= 57)
+			validFloat = true;
+		else
+			return false;
+		for(int i = 0; i < tokenStr.length(); i++)
+		{
+			currChar = tokenStr.charAt(i);
+			if((currChar >= 48 && currChar <= 57)
+					|| (currChar == 46))
+			{
+				if(currChar == 46)
+				{
+					decimalCount++;
+				}
+				validFloat = true;
+			}
+			else
+				return false;
+		}
+		if(decimalCount != 1)
+			return false;
+		return validFloat;
+	}
+	
+	// check if the decimal representation of each character
+	// is consistent with the ASCII versions of a crux grammar token.
 	public static boolean isValidIdentifier(String tokenStr){
 		if(tokenStr.length() == 0)
 			return true;
@@ -224,18 +283,27 @@ public class Token {
 		int currChar = 0;
 		int firstChar = tokenStr.charAt(0);
 
+		// if character is between:
+		// 1. a-z
+		// 2. A-Z
+		// 3. _
 		if((firstChar >= 97 && firstChar <= 122)
-		|| (firstChar >= 65 && firstChar <= 122)
+		|| (firstChar >= 65 && firstChar <= 90)
 		|| (firstChar == 95))
 			validIdentifier = true;
 		else
 			return false;
 
+		// if character is between:
+		// 1. a-z
+		// 2. A-Z
+		// 3. _
+		// 4. 0-9
 		for(int i = 0; i < tokenStr.length(); i++)
 		{
 			currChar = tokenStr.charAt(i);
 			if ((currChar >= 97 && currChar <= 122)
-				|| (currChar >= 65 && currChar <= 132)
+				|| (currChar >= 65 && currChar <= 90)
 				|| (currChar >= 48 && currChar <= 57)
 				|| (currChar == 95))
 				validIdentifier = true;
@@ -245,12 +313,21 @@ public class Token {
 		return validIdentifier;
 	}
 	
-	private static boolean isValidResCharThatHasMatches(String tokenStr)
+	private static boolean isValidResCharThatHasMatches(String tokenStr, boolean noExact)
 	{
-		for(Kind kind: Kind.values())
-			if(kind.getValue().contains(tokenStr) && 
-					!kind.getValue().equals(tokenStr))
-				return true;
+		if(noExact)
+		{
+			for(Kind kind: Kind.values())
+				if(kind.getValue().contains(tokenStr) && 
+						!kind.getValue().equals(tokenStr))
+					return true;
+		}
+		else
+		{
+			for(Kind kind: Kind.values())
+				if(kind.getValue().contains(tokenStr))
+					return true;
+		}
 		return false;
 	}
 
