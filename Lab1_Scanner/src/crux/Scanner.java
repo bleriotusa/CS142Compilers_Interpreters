@@ -20,6 +20,7 @@ public class Scanner implements Iterable<Token> {
 	{
 		// TODO: initialize the Scanner
 		input = reader;
+		lineNum +=1;
 	}	
 	
 	// OPTIONAL: helper function for reading a single char from input
@@ -32,8 +33,12 @@ public class Scanner implements Iterable<Token> {
 		try{
 			character = input.read();
 			if((char)character == '\n')
+			{
 				lineNum += 1;
-			charPos += 1;
+				charPos = 0;
+			}
+			else
+				charPos += 1;
 		}
 		catch(IOException e){
 			e.printStackTrace();
@@ -64,38 +69,48 @@ public class Scanner implements Iterable<Token> {
 		
 		// if end of File has already been read, keep returning EOF
 		if(nextChar == EOF)
-		{
 			return Token.EOF(lineNum, charPos);
-		}
 		
 		
 		String tokenStr = "";
 		Token token = null;
-		
+		int startCharPos = charPos;
+		boolean tokenSet = false;
 
-		// while a token hasn't been made yet,
+		// while another token can still be made and character isn't whitespace,
 		// try to map the string lexical to a token
-		while(!Character.isWhitespace(nextChar))
+		while(!Character.isWhitespace(nextChar) && 
+				Token.hasMoreMatches(tokenStr))
 		{
-			
 			tokenStr += (char)nextChar;
-			System.out.println(tokenStr);
-
 //			System.out.println("Scanner Loop Passed");
 			
 			for(Token.Kind kind : Token.Kind.values())
 			{
 				if(kind.getValue().equals(tokenStr))
-					token = new Token(tokenStr, lineNum, charPos);
+				{
+					token = new Token(tokenStr, lineNum, startCharPos);
+					tokenSet = true;
+				}
+				else if(Token.isInteger(tokenStr))
+				{
+					token = Token.Integer(lineNum, startCharPos);
+					tokenSet = true;
+				}
 				else if(tokenStr.equals(Integer.toString(EOF)))
-					token = Token.EOF(lineNum, charPos);
+				{
+					token = Token.EOF(lineNum, startCharPos);
+					tokenSet = true;
+				}
 			}
 			
-			// only read on if file is not at the end
+			// only read on if file is not at the end,
+			// and a token has been set, if token exists but hasn't been set this time... 
+//			if(nextChar != EOF && Token.hasMoreMatches(tokenStr))
 			if(nextChar != EOF)
 				nextChar = readChar();
 		}
-		return token;
+		return (token == null)? new Token("Error", lineNum, startCharPos) : token;
 	}
 
 	@Override
@@ -103,6 +118,12 @@ public class Scanner implements Iterable<Token> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	private boolean hasPossibleMatches(String tokenStr){
+		if(Token.hasMoreMatches(tokenStr))
+			;
+		return true;
+	}
 
 	// OPTIONAL: any other methods that you find convenient for implementation or testing
+
 }
