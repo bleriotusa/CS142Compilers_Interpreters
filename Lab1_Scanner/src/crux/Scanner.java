@@ -76,70 +76,83 @@ public class Scanner implements Iterable<Token>, Iterator<Token> {
 		String tokenStr = "";
 		Token token = null;
 		int startCharPos = charPos;
+		int startLine = lineNum;
 		byte someMatchMade = 0;
 
-		// while another token can still be made and character isn't whitespace,
+		// while:
+		// 1. another token can still be made (current token is valid
+		//		AND has a possibility of becoming another token with more characters)
+		// 2. character isn't whitespace,
 		// try to map the string lexical to a token
 		while(!Character.isWhitespace(nextChar) && 
 				Token.hasMoreMatches(tokenStr))
 		{
 			tokenStr += (char)nextChar;
+			
+			// if comment, move to new line and reset everything
 			if(tokenStr.equals("//"))
 			{
 				while(nextChar != '\n' && nextChar != EOF)
 					nextChar = readChar();
+				// just in case EOF is at the end of last line
 				if(nextChar == EOF)
 					return Token.EOF(lineNum, charPos);
 				nextChar = readChar();
+				
+				// re-do preliminary checks
+				while(Character.isWhitespace(nextChar))
+					nextChar = readChar();
+				if(nextChar == EOF)
+					return Token.EOF(lineNum, charPos);
+				
+				// re-initialize everything
 				tokenStr = "";
 				tokenStr += (char)nextChar;
 				token = null;
 				startCharPos = charPos;
+				startLine = lineNum;
 				someMatchMade = 0;
 			}
 			for(Token.Kind kind : Token.Kind.values())
 			{
 				if(kind.getValue().equals(tokenStr))
-				{
 					token = new Token(tokenStr, lineNum, startCharPos);
-//					someMatchMade = true;
-				}
+				
 			}
-			if(Token.isInteger(tokenStr))
-			{
+			if(Token.isInteger(tokenStr))			
 				token = new Token(tokenStr, lineNum, startCharPos);
-//				someMatchMade = true;
-			}
+					
+			else if(Token.isFloat(tokenStr))		
+				token = new Token(tokenStr, lineNum, startCharPos);
 			
-			else if(Token.isFloat(tokenStr))
-			{
+			else if(Token.isValidIdentifier(tokenStr))		
 				token = new Token(tokenStr, lineNum, startCharPos);
-//				someMatchMade = true;
-			}
-			else if(Token.isValidIdentifier(tokenStr))
-			{
-				token = new Token(tokenStr, lineNum, startCharPos);
-//				someMatchMade = true;
-			}
-			else if(tokenStr.equals(Integer.toString(EOF)))
-			{
+			
+			else if(tokenStr.equals(Integer.toString(EOF)))			
 				token = Token.EOF(lineNum, startCharPos);
-//				someMatchMade = true;
-			}
+			
 			if(Token.isValidToken(tokenStr))
 				someMatchMade++;
-			// only read on if file is not at the end,
-			// and a token has been set, if token exists but hasn't been set this time... 
-//			if(nextChar != EOF && Token.hasMoreMatches(tokenStr))
+			
+			// only read on if...
+			// 1. next char isn't EOF
+			// 2. the current Token is valid, (if not,
+			//		we want the nextChar that didn't fit into this token
+			//		to be considered for the next token.)
+			// 3. or the token is invalid and was always invalid (don't get stuck on this character)
 			if(nextChar != EOF && Token.isValidToken(tokenStr) || (token == null && someMatchMade == 0))
 				nextChar = readChar();
 		}
 		
+		// if a match had been made, but ended up not matching, then take off the 
+		// 		extra character (it will be reused in the scanner, but is irrelevant now).
+		// else just return the full string
+		// IN BOTH cases, if the token isn't null, return the token that was created.
 		if(someMatchMade > 0)
 			return (token == null)? new Token(tokenStr.substring(0,tokenStr.length()-1),
-					lineNum, startCharPos) : token;
+					startLine, startCharPos) : token;
 		return (token == null)? new Token(tokenStr.substring(0,tokenStr.length()),
-				lineNum, startCharPos) : token;
+				startLine, startCharPos) : token;
 	}
 
 	@Override

@@ -179,7 +179,16 @@ public class Token {
 		// TODO: implement // implemented
 		return lexeme;
 	}
-	
+	public String toString()
+	{
+		// TODO: implement this // implemented
+		if(kind == Kind.ERROR)
+			return String.format("%s(Unexpected character: %s)(lineNum:%d, charPos:%d)",
+					kind.name(), lexeme, lineNum, charPos);
+		else if(kind == Kind.INTEGER || kind == Kind.FLOAT || kind == Kind.IDENTIFIER)
+			return String.format("%s(%s)(lineNum:%d, charPos:%d)", kind.name(), lexeme, lineNum, charPos);
+		return String.format("%s(lineNum:%d, charPos:%d)", kind.name(), lineNum, charPos);
+	}
 	
 	// a crux string has more matches if:
 	// 1. it is a valid integer
@@ -187,6 +196,14 @@ public class Token {
 	// 3. it is a valid identifier (which includes reserved keywords that are letters)
 	// 4. it is a valid reserved character that is not a full reserved character
 	// 		e.g. = valid but not full. >= is valid and full, so it has no more matches.
+
+
+	
+	// OPTIONAL: function to query a token about its kind
+	//           boolean is(Token.Kind kind)
+	
+	// OPTIONAL: add any additional helper or convenience methods
+	//           that you find make for a clean design
 	public static boolean hasMoreMatches(String kindPart)
 	{
 		if (isInteger(kindPart))
@@ -213,65 +230,6 @@ public class Token {
 		if (isValidResCharThatHasMatches(kindPart, false))
 			return true;
 		return false;
-	}
-	
-	public String toString()
-	{
-		// TODO: implement this // implemented
-		if(kind == Kind.ERROR)
-			return String.format("%s(Unexpected character: %s)(lineNum:%d, charPos:%d)",
-					kind.name(), lexeme, lineNum, charPos);
-		else if(kind == Kind.INTEGER || kind == Kind.FLOAT || kind == Kind.IDENTIFIER)
-			return String.format("%s(%s)(lineNum:%d, charPos:%d)", kind.name(), lexeme, lineNum, charPos);
-		return String.format("%s(lineNum:%d, charPos:%d)", kind.name(), lineNum, charPos);
-	}
-	
-	// OPTIONAL: function to query a token about its kind
-	//           boolean is(Token.Kind kind)
-	
-	// OPTIONAL: add any additional helper or convenience methods
-	//           that you find make for a clean design
-	public static boolean isInteger(String tokenStr){
-		try{
-			Integer.parseInt(tokenStr);
-		}
-		catch(NumberFormatException e){
-			return false;
-		}
-		return true;
-	}
-	
-	public static boolean isFloat(String tokenStr){
-		if(tokenStr.length() == 0)
-			return true;
-		
-		boolean validFloat = false;
-		int currChar = 0;
-		int firstChar = tokenStr.charAt(0);
-		int decimalCount = 0;
-		
-		if(firstChar >= 48 && currChar <= 57)
-			validFloat = true;
-		else
-			return false;
-		for(int i = 0; i < tokenStr.length(); i++)
-		{
-			currChar = tokenStr.charAt(i);
-			if((currChar >= 48 && currChar <= 57)
-					|| (currChar == 46))
-			{
-				if(currChar == 46)
-				{
-					decimalCount++;
-				}
-				validFloat = true;
-			}
-			else
-				return false;
-		}
-		if(decimalCount != 1)
-			return false;
-		return validFloat;
 	}
 	
 	// check if the decimal representation of each character
@@ -312,6 +270,51 @@ public class Token {
 		}
 		return validIdentifier;
 	}
+	
+	
+	public static boolean isInteger(String tokenStr){
+		try{
+			Integer.parseInt(tokenStr);
+		}
+		catch(NumberFormatException e){
+			return false;
+		}
+		return true;
+	}
+	
+	// use same principle as isValidIdentifier
+	public static boolean isFloat(String tokenStr){
+		if(tokenStr.length() == 0)
+			return true;
+		
+		boolean validFloat = false;
+		int currChar = 0;
+		int firstChar = tokenStr.charAt(0);
+		int decimalCount = 0;
+		
+		if(firstChar >= 48 && currChar <= 57)
+			validFloat = true;
+		else
+			return false;
+		for(int i = 0; i < tokenStr.length(); i++)
+		{
+			currChar = tokenStr.charAt(i);
+			if((currChar >= 48 && currChar <= 57)
+					|| (currChar == 46))
+			{
+				if(currChar == 46)
+					decimalCount++;
+				validFloat = true;
+			}
+			else
+				return false;
+		}
+		if(decimalCount != 1)
+			return false;
+		return validFloat;
+	}
+	
+
 	
 	private static boolean isValidResCharThatHasMatches(String tokenStr, boolean noExact)
 	{

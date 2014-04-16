@@ -24,7 +24,8 @@ public class ScannerTest {
 
 		input = new Scanner(new FileReader("test00.crx"));
 		Token token = input.next();
-		System.out.println(token);
+		assertTrue(token.kind.equals(Token.Kind.EOF));
+//		System.out.println(token);
 	}
 	@Test
 	public void testNext1() throws FileNotFoundException {
@@ -32,7 +33,7 @@ public class ScannerTest {
 
 		input = new Scanner(new FileReader("test01.crx"));
 		Token token = input.next();
-		System.out.println(token);
+//		System.out.println(token);
 		assertTrue(token.kind.equals(Token.Kind.ASSIGN));
 	}
 	@Test
@@ -41,9 +42,9 @@ public class ScannerTest {
 		input = new Scanner(new FileReader("test02.crx"));
 		Token token = input.next();
 		Token token2 = input.next();
-		System.out.println(token);
+//		System.out.println(token);
 		assertTrue(token.kind.equals(Token.Kind.EQUAL));
-		System.out.println(token2);
+//		System.out.println(token2);
 		assertTrue(token2.kind.equals(Token.Kind.EOF));
 
 
@@ -54,9 +55,9 @@ public class ScannerTest {
 		input = new Scanner(new FileReader("test03.crx"));
 		Token token = input.next();
 		Token token2 = input.next();
-		System.out.println(token);
+//		System.out.println(token);
 		assertTrue(token.kind.equals(Token.Kind.EQUAL));
-		System.out.println(token2);
+//		System.out.println(token2);
 		assertTrue(token2.kind.equals(Token.Kind.ASSIGN));
 	}
 	@Test
@@ -136,7 +137,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test05.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -148,7 +149,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test06.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -160,7 +161,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test07.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -172,7 +173,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test08.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -184,7 +185,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test09.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -196,7 +197,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test10.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -208,7 +209,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test11.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -220,7 +221,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test12.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -232,7 +233,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test13.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -244,7 +245,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test14.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -256,7 +257,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test15.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -268,7 +269,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test16.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -280,7 +281,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test17.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -292,7 +293,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test18.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -304,7 +305,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test19.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -316,7 +317,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test20.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -328,7 +329,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test21.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -340,7 +341,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test22.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -352,7 +353,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test23.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -364,7 +365,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test24.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -376,7 +377,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test25.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -388,7 +389,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test26.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -400,7 +401,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test27.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -412,7 +413,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test28.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
@@ -424,8 +425,13 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test29.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
-			assertTrue(token.toString().equals(reader.readLine()));
+//			System.out.println(token);
+			String read = reader.readLine();
+
+			assertTrue(token.toString().equals(read));
+			if(!token.toString().equals(read))
+				System.out.println(token + "EXPECTED: " + read);
+			
 		}
 		reader.close();
 	}
@@ -436,7 +442,7 @@ public class ScannerTest {
 		Scanner scanner = new Scanner(new FileReader("test30.crx"));
 		for(Token token: scanner)
 		{
-			System.out.println(token);
+//			System.out.println(token);
 			assertTrue(token.toString().equals(reader.readLine()));
 		}
 		reader.close();
