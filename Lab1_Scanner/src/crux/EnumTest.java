@@ -29,6 +29,9 @@ public class EnumTest {
 		String test = "";
 		test += -1;
 		System.out.println("EOF STRING = " + test);
+		
+		Token a = new Token("and", 3, 4);
+		System.out.println(a.kind().toString());
 	}
 
 }

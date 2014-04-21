@@ -190,24 +190,24 @@ public class Token {
 		return String.format("%s(lineNum:%d, charPos:%d)", kind.name(), lineNum, charPos);
 	}
 	
-	// a crux string has more matches if:
-	// 1. it is a valid integer
-	// 2. it is a valid float
-	// 3. it is a valid identifier (which includes reserved keywords that are letters)
-	// 4. it is a valid reserved character that is not a full reserved character
-	// 		e.g. = valid but not full. >= is valid and full, so it has no more matches.
-
-
 	
 	// OPTIONAL: function to query a token about its kind
 	//           boolean is(Token.Kind kind)
-	public Kind kind()
-	{
+	public boolean is(Kind kind){
+		return this.kind == kind;
+	}
+	public Kind kind(){
 		return kind;
 	}
-	
 	// OPTIONAL: add any additional helper or convenience methods
 	//           that you find make for a clean design
+	
+	// a crux string has more matches if:
+		// 1. it is a valid integer
+		// 2. it is a valid float
+		// 3. it is a valid identifier (which includes reserved keywords that are letters)
+		// 4. it is a valid reserved character that is not a full reserved character
+		// 		e.g. = valid but not full. >= is valid and full, so it has no more matches.
 	public static boolean hasMoreMatches(String kindPart)
 	{
 		if (isInteger(kindPart))
