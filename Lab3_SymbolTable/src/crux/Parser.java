@@ -83,27 +83,7 @@ public class Parser {
         return message;
     }    
 
-// Helper Methods ==========================================
-
-    private Token expectRetrieve(Token.Kind kind)
-    {
-        Token tok = currentToken;
-        if (accept(kind))
-            return tok;
-        String errorMessage = reportSyntaxError(kind);
-        throw new QuitParseException(errorMessage);
-        //return ErrorToken(errorMessage);
-    }
-        
-    private Token expectRetrieve(NonTerminal nt)
-    {
-        Token tok = currentToken;
-        if (accept(nt))
-            return tok;
-        String errorMessage = reportSyntaxError(nt);
-        throw new QuitParseException(errorMessage);
-        //return ErrorToken(errorMessage);
-    }    
+   
 // Grammar Rule Reporting ==========================================
     private int parseTreeRecursionDepth = 0;
     private StringBuffer parseTreeBuffer = new StringBuffer();
@@ -253,6 +233,26 @@ public class Parser {
         throw new QuitParseException(errorMessage);
         //return false;
     }
+
+    private Token expectRetrieve(Token.Kind kind)
+    {
+        Token tok = currentToken;
+        if (accept(kind))
+            return tok;
+        String errorMessage = reportSyntaxError(kind);
+        throw new QuitParseException(errorMessage);
+        //return ErrorToken(errorMessage);
+    }
+        
+    private Token expectRetrieve(NonTerminal nt)
+    {
+        Token tok = currentToken;
+        if (accept(nt))
+            return tok;
+        String errorMessage = reportSyntaxError(nt);
+        throw new QuitParseException(errorMessage);
+        //return ErrorToken(errorMessage);
+    } 
    
 // Grammar Rules =====================================================
     
