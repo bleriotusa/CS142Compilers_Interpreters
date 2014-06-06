@@ -1,0 +1,11 @@
+
+func main() : void {
+// test logical not
+  var i:int;
+  var f:float;
+  var b:bool;
+
+  ::printBool(not i);
+  ::printBool(not f);
+  ::printBool(not b);
+}

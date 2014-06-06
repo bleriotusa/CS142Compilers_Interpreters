@@ -1,6 +1,7 @@
 package crux;
 
 import java.util.ArrayList;
+import types.*;
 import java.util.List;
 import java.util.Stack;
 
@@ -15,7 +16,14 @@ public class Parser {
     public static String studentName = "Michael J. Chen";
     public static String studentID = "37145431";
     public static String uciNetID = "chenmj1";
+
+// Typing System ===================================
     
+    private Type tryResolveType(String typeStr)
+    {
+        return Type.getBaseType(typeStr);
+    }
+  
 // Parser ==========================================
     private Scanner scanner;
     private Token currentToken;
@@ -45,12 +53,11 @@ public class Parser {
     	symbolTable = new SymbolTable();
     	
     	// add pre-defined functions
-    	symbolTable.insert("readInt");
-    	symbolTable.insert("readFloat");
-    	symbolTable.insert("printBool");
-    	symbolTable.insert("printInt");
-    	symbolTable.insert("printFloat");
-    	symbolTable.insert("println");
+    	symbolTable.insertWithType("readInt", new FuncType(new TypeList(), new IntType()));
+    	symbolTable.insertWithType("readFloat", new FuncType(new TypeList(), new FloatType()));
+    	symbolTable.insertWithType("printBool", new FuncType(new TypeList().append(new BoolType()), new VoidType()));
+    	symbolTable.insertWithType("printInt", new FuncType(new TypeList().append(new IntType()), new VoidType()));
+    	symbolTable.insertWithType("printFloat", new FuncType(new TypeList().append(new FloatType()), new VoidType()));
     	
     	stack.push(symbolTable);
     }
@@ -217,6 +224,7 @@ public class Parser {
         //return false;
     }
         
+	@SuppressWarnings("unused")
 	private boolean expect(NonTerminal nt)
     {
         if (accept(nt))
@@ -264,31 +272,15 @@ public class Parser {
     public Expression designator()
     {
         enterRule(NonTerminal.DESIGNATOR);
-        int count = 0;
-        ast.Expression currExpr = null;
-        ast.Expression baseExpr = null;
-        Token token = null;
+        Token token = expectRetrieve(Token.Kind.IDENTIFIER);
+        Symbol symbol = tryResolveSymbol(token);
         
 		ast.Expression expr = new ast.AddressOf(currentToken.lineNumber(), currentToken.charPosition(),
-				tryResolveSymbol(expectRetrieve(Token.Kind.IDENTIFIER)));
+				symbol);
+		
         while (accept(Token.Kind.OPEN_BRACKET)) {
     		token = currentToken;
     		expr = new ast.Index(token.lineNumber(), token.charPosition(), expr, expression0());
-//        	count++;
-//        	if(count == 2) {
-//            	currExpr = expression0();
-//	            expr = new ast.Index(token.lineNumber(), token.charPosition(),
-//	            		baseExpr, currExpr);
-//        	}
-//        	else if(count > 2) {
-//            	currExpr = expression0();
-//	            expr = new ast.Index(token.lineNumber(), token.charPosition(),
-//	            		expr, currExpr);
-//        	}
-//        	else {
-////        		token = currentToken;
-//        		baseExpr = expression0();
-//        	}
 
             expect(Token.Kind.CLOSE_BRACKET);
             
@@ -301,8 +293,6 @@ public class Parser {
     public ast.Expression expression0()
     {
     	enterRule(NonTerminal.EXPRESSION0);
-    	int lineNum = currentToken.lineNumber();
-    	int charPos = currentToken.charPosition();
     	Token op = null;
     	
     	ast.Expression leftSide  = expression1();
@@ -314,16 +304,6 @@ public class Parser {
     	}
     	    	
     	exitRule(NonTerminal.EXPRESSION0);
-//    	if(opToken != null)
-//	    	switch(opToken.kind()){
-//				case GREATER_EQUAL: return new ast.Comparison(lineNum, charPos, leftSide, Comparison.Operation.GE, rightSide);
-//				case LESSER_EQUAL: return new ast.Comparison(lineNum, charPos, leftSide, Comparison.Operation.LE, rightSide);
-//				case NOT_EQUAL: return new ast.Comparison(lineNum, charPos, leftSide, Comparison.Operation.NE, rightSide);
-//				case EQUAL: return new ast.Comparison(lineNum, charPos, leftSide, Comparison.Operation.EQ, rightSide);
-//				case GREATER_THAN: return new ast.Comparison(lineNum, charPos, leftSide, Comparison.Operation.GT, rightSide);
-//				case LESS_THAN: return new ast.Comparison(lineNum, charPos, leftSide, Comparison.Operation.LT, rightSide);
-//				default: return new ast.Error(lineNum, charPos, "Case in expression0 fell through");
-//	    	}
     	return (op != null)? ast.Command.newExpression(leftSide, op, rightSide)
     			: leftSide;
     }
@@ -331,8 +311,6 @@ public class Parser {
     public ast.Expression expression1()
     {
     	enterRule(NonTerminal.EXPRESSION1);
-    	int lineNum = currentToken.lineNumber();
-    	int charPos = currentToken.charPosition();
     	Token op = null;
     	
     	ast.Expression leftSide  = expression2();
@@ -355,13 +333,6 @@ public class Parser {
     	
     	exitRule(NonTerminal.EXPRESSION1);
     	
-//    	if(opToken != null)
-//		switch(opToken.kind()){
-//			case ADD: return new ast.Addition(lineNum, charPos, leftSide, rightSide);
-//			case SUB: return new ast.Subtraction(lineNum, charPos, leftSide, rightSide);
-//			case OR: return new ast.LogicalOr(lineNum, charPos, leftSide, rightSide);
-//			default: return new ast.Error(lineNum, charPos, "Case in expression1 fell through");
-//		}
     	return (op != null)? ast.Command.newExpression(leftSide, op, rightSide)
     			: leftSide;
     }
@@ -369,8 +340,6 @@ public class Parser {
     public ast.Expression expression2()
     {
     	enterRule(NonTerminal.EXPRESSION2);
-    	int lineNum = currentToken.lineNumber();
-    	int charPos = currentToken.charPosition();
     	Token op = null;
     	
     	ast.Expression leftSide  = expression3();
@@ -390,13 +359,6 @@ public class Parser {
 		}
     	
     	exitRule(NonTerminal.EXPRESSION2);
-//    	if(opToken != null)
-//			switch(opToken.kind()){
-//				case ADD: return new ast.Multiplication(lineNum, charPos, leftSide, rightSide);
-//				case SUB: return new ast.Division(lineNum, charPos, leftSide, rightSide);
-//				case OR: return new ast.LogicalAnd(lineNum, charPos, leftSide, rightSide);
-//				default: return new ast.Error(lineNum, charPos, "Case in expression2 fell through");
-//			}
     	return (op != null)? ast.Command.newExpression(leftSide, op, rightSide)
     			: leftSide;
     }
@@ -404,7 +366,6 @@ public class Parser {
     public ast.Expression expression3()
     {
     	enterRule(NonTerminal.EXPRESSION3);
-//    	ast.Expression expr = new ast.Call(5, 5, new Symbol(null), new ast.ExpressionList(3, 3));
     	ast.Expression expr = null;
     	Token token = currentToken;
     	
@@ -594,7 +555,7 @@ public class Parser {
     	expect(Token.Kind.VAR);
     	Symbol symbol = tryDeclareSymbol(expectRetrieve(Token.Kind.IDENTIFIER));
     	expect(Token.Kind.COLON);
-    	type(); 
+    	symbol.setType(type()); 
     	expect(Token.Kind.SEMICOLON);
     	
     	exitRule(NonTerminal.VARIABLE_DECLARATION);
@@ -610,14 +571,27 @@ public class Parser {
     	expect(Token.Kind.ARRAY);
     	Symbol symbol = tryDeclareSymbol(expectRetrieve(Token.Kind.IDENTIFIER));
     	expect(Token.Kind.COLON);
-    	type(); 
+//    	symbol.setType(type()); 
+    	Type type = type();
+    	ArrayType arrayType = null;
+    	int extent = 0;
+    	int passed = 0;
+    	Stack<Integer> indices = new Stack<Integer>();
     	do{
 	    	expect(Token.Kind.OPEN_BRACKET);
-	    	expect(Token.Kind.INTEGER);
+	    	extent = Integer.parseInt(expectRetrieve(Token.Kind.INTEGER).lexeme());
+	    	if(passed > 0) {
+	    		arrayType.setBase(new ArrayType(extent, arrayType.base()));
+	    	}
+	    	else
+	    		arrayType = new ArrayType(extent, type);
 	    	expect(Token.Kind.CLOSE_BRACKET);
+	    	passed++;
+	    	System.out.println("Passed " + passed);
     	}while(have(Token.Kind.OPEN_BRACKET));
     	expect(Token.Kind.SEMICOLON);
     	
+    	symbol.setType(arrayType);
     	exitRule(NonTerminal.ARRAY_DECLARATION);
     	return new ast.ArrayDeclaration(lineNum, charPos, symbol);
     }
@@ -633,10 +607,19 @@ public class Parser {
     	enterScope();
     	
     	expect(Token.Kind.OPEN_PAREN);
-    	List<Symbol> args = parameter_list();
+//    	List<Symbol> args = parameter_list();
+//    	TypeList typeList = new TypeList();
+//    	for(Symbol parameter: args)
+//    		typeList.append(parameter.type());
+    	
+    	TypeList args = parameter_list();
+
     	expect(Token.Kind.CLOSE_PAREN);
     	expect(Token.Kind.COLON);
-    	type();
+    	Type returnType = type();
+//    	symbol.setType(new FuncType(typeList, returnType));
+    	symbol.setType(new FuncType(args, returnType));
+
     	StatementList body = statement_block();
     	    	
     	exitScope();
@@ -646,29 +629,37 @@ public class Parser {
     			charPos, symbol , args, body);
     }
     
-    public void type()
+    public types.Type type()
     {
+    	types.Type type = null;
+    	
     	enterRule(NonTerminal.TYPE);
-    	expect(Token.Kind.IDENTIFIER);
+    	type = types.Type.getBaseType(expectRetrieve(Token.Kind.IDENTIFIER).lexeme());
     	exitRule(NonTerminal.TYPE);
+    	
+		return type;
     }
     
-    public List<Symbol> parameter_list()
+    public TypeList parameter_list()
     {
     	enterRule(NonTerminal.PARAMETER_LIST);
     	List<Symbol> parameterList = new ArrayList<Symbol>();
+    	TypeList typelist = new TypeList();
     	
     	if(have(NonTerminal.PARAMETER))
     	{
-	    	parameterList.add(parameter());
+//	    	parameterList.add(parameter());
+    		typelist.append(parameter().type());
 	    	while(accept(Token.Kind.COMMA))
 	    	{
-	    		parameterList.add(parameter());
+//	    		parameterList.add(parameter());
+	    		typelist.append(parameter().type());
 	    	}
     	}
     	
     	exitRule(NonTerminal.PARAMETER_LIST);
-    	return parameterList;
+//    	return parameterList;
+    	return typelist;
     }
     
     public Symbol parameter()
@@ -678,7 +669,7 @@ public class Parser {
     	
     	parameter = tryDeclareSymbol(expectRetrieve(Token.Kind.IDENTIFIER));
     	expect(Token.Kind.COLON);
-    	type();
+    	parameter.setType(type());
     	
     	exitRule(NonTerminal.PARAMETER);
     	return parameter;

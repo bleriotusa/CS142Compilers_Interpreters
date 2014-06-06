@@ -1,0 +1,11 @@
+Error parsing file.
+ResolveSymbolError(6,5)[Could not find println.]
+Symbol(readInt:func(TypeList()):int)
+Symbol(readFloat:func(TypeList()):float)
+Symbol(printBool:func(TypeList(bool)):void)
+Symbol(printInt:func(TypeList(int)):void)
+Symbol(printFloat:func(TypeList(float)):void)
+Symbol(x:array[3,array[3,array[3,void]]])
+Symbol(main:func(TypeList()):void)
+
+
